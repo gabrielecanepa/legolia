@@ -1,4 +1,5 @@
+import Image from './image'
 import Layout from './layout'
 import Link from './link'
 
-export { Layout, Link }
+export { Image, Layout, Link }

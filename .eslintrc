@@ -142,6 +142,9 @@
     "react/prop-types": 0,
     "react/require-default-props": 0,
     "react/require-optimization": 0,
+    "react/self-closing-comp": [2, {
+      "html": true
+    }],
     "react/sort-prop-types": [
       2,
       {

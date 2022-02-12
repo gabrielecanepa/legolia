@@ -1,10 +1,14 @@
-import GlobalStyle from './global-style'
+import Fonts from './fonts'
 import Head from './head'
+import Navbar from './navbar'
+import Style from './style'
 
-const Layout = ({ children, theme }) => (
+const Layout = ({ children }) => (
   <>
-    <Head theme={theme} />
-    <GlobalStyle theme={theme} />
+    <Head />
+    <Fonts />
+    <Style />
+    <Navbar />
     {children}
   </>
 )
