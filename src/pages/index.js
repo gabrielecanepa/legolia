@@ -1,11 +1,7 @@
 import styled from 'styled-components'
 
-const Home = () => (
-  <div>
-    <p>{'Hello'}</p>
-  </div>
-)
+const Home = () => <div />
 
 export default styled(Home)`
-  color: red !important;  
+  color: red !important;
 `

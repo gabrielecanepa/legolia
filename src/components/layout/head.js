@@ -30,7 +30,7 @@ const Head = () => {
       <link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
       <link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
       <link href="/site.webmanifest" rel="manifest" />
-      <link color={theme.primary} href="/safari-pinned-tab.svg" rel="mask-icon" />
+      <link color={theme.colors.primary} href="/safari-pinned-tab.svg" rel="mask-icon" />
     </NextHead>
   )
 }

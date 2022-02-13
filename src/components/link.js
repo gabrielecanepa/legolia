@@ -8,7 +8,7 @@ const Link = ({ as, to = '/', children, ...props }) => (
 )
 
 export default styled(Link)`
-  height: inherit;
+  /* height: inherit; */
   text-decoration: none;
 
   ${({ flex }) =>

@@ -1,7 +1,7 @@
 import Container from './container'
-import Link from 'components/link'
 import styled from 'styled-components'
 import { Bag, Heart, Legolia } from 'assets/icons'
+import { Link, Search } from 'components'
 
 const BaseNavbar = styled.header`
   background-color: ${({ theme }) => theme.colors.yellow};
@@ -25,7 +25,7 @@ const NavbarLeft = styled.nav`
 `
 
 const Logo = styled(props => (
-  <Link to="/" {...props}>
+  <Link to="/" {...props} title="Legolia">
     <Legolia />
   </Link>
 ))`
@@ -33,7 +33,6 @@ const Logo = styled(props => (
 
   svg {
     width: 3.4375rem;
-    height: 100%;
     display: flex;
   }
 `
@@ -50,6 +49,7 @@ const MenuList = ({ items = ['Shop', 'Discover', 'Help'], ...props }) => (
 
 const Menu = styled(MenuList)`
   height: 3.4375rem;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
 
@@ -76,6 +76,8 @@ const Menu = styled(MenuList)`
 const NavbarRight = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-end;
+  flex-grow: 1;
 `
 
 const Actions = styled(props => (
@@ -91,7 +93,7 @@ const Actions = styled(props => (
 ))`
   display: flex;
   align-items: center;
-  margin-right: auto;
+  margin-left: 1.875rem;
 
   a {
     display: flex;
@@ -112,7 +114,7 @@ const Navbar = props => (
         <Menu />
       </NavbarLeft>
       <NavbarRight>
-        {/* Search */}
+        <Search />
         <Actions />
       </NavbarRight>
     </FlexContainer>
