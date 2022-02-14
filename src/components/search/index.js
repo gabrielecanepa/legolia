@@ -1,7 +1,10 @@
+import algolia from 'config/algolia'
+import algoliasearch from 'algoliasearch/lite'
 import styled from 'styled-components'
 import { Button, Form, Input } from 'components'
 import { Close, Magnifier } from 'assets/icons'
-import { useCallback, useState } from 'react'
+import { InstantSearch, useSearchBox } from 'react-instantsearch-hooks'
+import { useCallback, useEffect, useState } from 'react'
 import { useFocus } from 'hooks'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -65,21 +68,23 @@ const SearchInput = styled(Input)`
   }
 `
 
-const Search = ({ open, value, ...props }) => {
-  const [isOpen, setIsOpen] = useState(!!open)
-  const [query, setQuery] = useState(value)
+const algoliaClient = algoliasearch(algolia.appId, algolia.apiKey)
 
+const Search = ({ open, ...props }) => {
+  const [isOpen, setIsOpen] = useState(!!open)
+  const { query, refine } = useSearchBox(props)
+  const [inputValue, setInputValue] = useState(query)
   const [inputRef, setInputFocus] = useFocus()
 
   const onKeyDown = useCallback(e => {
     if (e.key === 'Escape') onClose()
   }, [])
   const onChange = useCallback(e => {
-    setQuery(e.target.value)
+    setInputValue(e.target.value)
   }, [])
   const onClose = useCallback(() => {
     setIsOpen(false)
-    setQuery('')
+    setInputValue('')
   }, [])
   const onOpen = useCallback(() => {
     setIsOpen(true)
@@ -87,26 +92,43 @@ const Search = ({ open, value, ...props }) => {
   }, [])
   const onSubmit = useCallback(e => {
     e.preventDefault()
+    e.stopPropagation()
+    if (inputRef.current) setInputFocus(false)
   }, [])
+  const onReset = useCallback(e => {
+    e.preventDefault()
+    e.stopPropagation()
+    setInputValue('')
+    if (inputRef.current) setInputFocus(true)
+  }, [])
+
+  useEffect(() => {
+    if (query !== inputValue) refine(inputValue)
+  }, [inputValue, refine])
+  useEffect(() => {
+    if (document.activeElement !== inputRef.current && query !== inputValue) setInputValue(query)
+  }, [query])
 
   useHotkeys('ctrl+k, cmd+k', onOpen)
 
   return isOpen ? (
-    <SearchBox {...props} onSubmit={onSubmit}>
-      <SearchInput
-        autoComplete="off"
-        autoFocus
-        name="search"
-        onChange={onChange}
-        onKeyDown={onKeyDown}
-        placeholder="Search..."
-        ref={inputRef}
-        spellCheck="false"
-        value={query}
-      />
-      <SearchButton title="Search" type="submit" />
-      <SearchClose onClick={onClose} title="Hide search" />
-    </SearchBox>
+    <InstantSearch indexName={algolia.indexName} searchClient={algoliaClient}>
+      <SearchBox {...props} onReset={onReset} onSubmit={onSubmit}>
+        <SearchInput
+          autoComplete="off"
+          autoFocus
+          name="search"
+          onChange={onChange}
+          onKeyDown={onKeyDown}
+          placeholder="Search..."
+          ref={inputRef}
+          spellCheck={false}
+          value={inputValue}
+        />
+        <SearchButton title="Search" type="submit" />
+        <SearchClose onClick={onClose} title="Hide search" />
+      </SearchBox>
+    </InstantSearch>
   ) : (
     <SearchButton {...props} onClick={onOpen} title="Open search" />
   )
