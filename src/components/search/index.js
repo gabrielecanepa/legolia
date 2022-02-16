@@ -1,136 +1,43 @@
-import algolia from 'config/algolia'
-import algoliasearch from 'algoliasearch/lite'
+import Dropdown from './dropdown'
+import SearchBox from './searchbox'
 import styled from 'styled-components'
-import { Button, Form, Input } from 'components'
-import { Close, Magnifier } from 'assets/icons'
-import { InstantSearch, useSearchBox } from 'react-instantsearch-hooks'
-import { useCallback, useEffect, useState } from 'react'
-import { useFocus } from 'hooks'
-import { useHotkeys } from 'react-hotkeys-hook'
+import { Configure } from 'react-instantsearch-hooks'
+import { useCallback, useClickOut, useRef, useState } from 'hooks'
 
-const ButtonSearch = styled(Button)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background: rgb(255, 255, 255);
-`
-
-const SearchButton = styled(props => (
-  <ButtonSearch {...props}>
-    <Magnifier />
-  </ButtonSearch>
-))`
-  order: -1;
-  z-index: 2;
-  padding: 0.75rem;
-`
-
-const SearchClose = props => (
-  <ButtonSearch {...props}>
-    <Close />
-  </ButtonSearch>
-)
-
-const SearchBox = styled(Form)`
-  display: flex;
-  align-items: center;
+const SearchContainer = styled.div`
   position: relative;
-  background-color: rgb(255, 255, 255);
-  border-radius: 1.25rem;
-
-  @media screen and (min-width: 601px) {
-    width: calc(100% - 4rem);
-  }
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-end;
 `
 
-const SearchInput = styled(Input)`
-  width: calc(100% - 5rem);
-  height: 2.5rem;
-  border: none;
-  color: rgb(44, 44, 44);
-  padding: 0.625rem 0px 0.625rem 0.3125rem;
-  line-height: 1.25rem;
-  font-size: 1rem;
-  box-sizing: border-box;
-  outline-offset: -2px;
-  overflow: visible;
-  margin: 0;
-  outline: none;
+const Search = ({ open: initial }) => {
+  const [expanded, setExpanded] = useState(!!initial)
+  const [open, setOpen] = useState(!!initial)
+  const [value, setValue] = useState('')
+  const searchRef = useRef(null)
 
-  @media screen and (min-width: 601px) {
-    width: calc(100% - 2.5rem);
-  }
-  @media screen and (min-width: 901px) {
-    font-size: 0.875rem;
-  }
-`
-
-const algoliaClient = algoliasearch(algolia.appId, algolia.apiKey)
-
-const Search = ({ open, ...props }) => {
-  const [isOpen, setIsOpen] = useState(!!open)
-  const { query, refine } = useSearchBox(props)
-  const [inputValue, setInputValue] = useState(query)
-  const [inputRef, setInputFocus] = useFocus()
-
-  const onKeyDown = useCallback(e => {
-    if (e.key === 'Escape') onClose()
-  }, [])
-  const onChange = useCallback(e => {
-    setInputValue(e.target.value)
-  }, [])
-  const onClose = useCallback(() => {
-    setIsOpen(false)
-    setInputValue('')
-  }, [])
-  const onOpen = useCallback(() => {
-    setIsOpen(true)
-    setInputFocus(true)
-  }, [])
-  const onSubmit = useCallback(e => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (inputRef.current) setInputFocus(false)
-  }, [])
-  const onReset = useCallback(e => {
-    e.preventDefault()
-    e.stopPropagation()
-    setInputValue('')
-    if (inputRef.current) setInputFocus(true)
+  const onClickOut = useCallback(() => {
+    setOpen(false)
   }, [])
 
-  useEffect(() => {
-    if (query !== inputValue) refine(inputValue)
-  }, [inputValue, refine])
-  useEffect(() => {
-    if (document.activeElement !== inputRef.current && query !== inputValue) setInputValue(query)
-  }, [query])
+  useClickOut(searchRef, onClickOut)
 
-  useHotkeys('ctrl+k, cmd+k', onOpen)
-
-  return isOpen ? (
-    <InstantSearch indexName={algolia.indexName} searchClient={algoliaClient}>
-      <SearchBox {...props} onReset={onReset} onSubmit={onSubmit}>
-        <SearchInput
-          autoComplete="off"
-          autoFocus
-          name="search"
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-          placeholder="Search..."
-          ref={inputRef}
-          spellCheck={false}
-          value={inputValue}
+  return (
+    <>
+      <Configure hitsPerPage={8} />
+      <SearchContainer ref={searchRef}>
+        <SearchBox
+          expanded={expanded}
+          open={open}
+          setExpanded={setExpanded}
+          setOpen={setOpen}
+          setValue={setValue}
+          value={value}
         />
-        <SearchButton title="Search" type="submit" />
-        <SearchClose onClick={onClose} title="Hide search" />
-      </SearchBox>
-    </InstantSearch>
-  ) : (
-    <SearchButton {...props} onClick={onOpen} title="Open search" />
+        {open && <Dropdown searchRef={searchRef} setOpen={setOpen} setValue={setValue} />}
+      </SearchContainer>
+    </>
   )
 }
 

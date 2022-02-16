@@ -1,7 +1,8 @@
 import styled from 'styled-components'
 
 const Input = styled.input`
-  &:focus, &:focus-visible {
+  &:focus,
+  &:focus-visible {
     outline: none;
   }
 `

@@ -88,7 +88,7 @@
     "prettier/prettier": [
       2,
       {
-        "printWidth": 120,
+        "printWidth": 100,
         "singleQuote": true,
         "semi": false,
         "trailingComma": "es5",
@@ -155,7 +155,9 @@
         "requiredFirst": false
       }
     ],
-    "react-hooks/exhaustive-deps": 0,
+    "react-hooks/exhaustive-deps": [1, {
+      "enableDangerousAutofixThisMayCauseInfiniteLoops": true
+      }],
     "react-hooks/rules-of-hooks": 2
   }
 }

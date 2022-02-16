@@ -15,13 +15,13 @@ const BaseNavbar = styled.header`
 const FlexContainer = styled(Container)`
   display: flex;
   align-items: center;
-  justify-content: space-between;
 `
 
 const NavbarLeft = styled.nav`
   height: 100%;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 `
 
 const Logo = styled(props => (
@@ -49,7 +49,6 @@ const MenuList = ({ items = ['Shop', 'Discover', 'Help'], ...props }) => (
 
 const Menu = styled(MenuList)`
   height: 3.4375rem;
-  flex-shrink: 0;
   display: flex;
   align-items: center;
 

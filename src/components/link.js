@@ -18,6 +18,6 @@ export default styled(Link)`
   ${({ theme, variant }) =>
     variant &&
     ` 
-      color: ${theme[variant]?.color};
+      color: ${theme[variant]};
   `}
 `

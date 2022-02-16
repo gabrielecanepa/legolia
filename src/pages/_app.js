@@ -9,7 +9,7 @@ const algoliaClient = algoliasearch(algolia.appId, algolia.apiKey)
 
 const App = ({ Component, pageProps }) => (
   <ThemeProvider theme={theme}>
-    <InstantSearch indexName={algolia.indexName} searchClient={algoliaClient} suppressExperimentalWarning>
+    <InstantSearch indexName={algolia.indexName} searchClient={algoliaClient}>
       <Layout theme={theme}>
         <Component {...pageProps} />
       </Layout>

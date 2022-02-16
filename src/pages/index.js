@@ -1,5 +1,9 @@
-import styled from 'styled-components'
+import { useSearchBox } from 'hooks'
 
-const Home = () => <div />
+const Search = () => {
+  const { query } = useSearchBox()
 
-export default styled(Home)``
+  return <p>{query}</p>
+}
+
+export default Search
