@@ -1,7 +1,15 @@
 import styled from 'styled-components'
 import { Button, Form, Input } from 'components'
 import { Close, Magnifier } from 'assets/icons'
-import { useCallback, useEffect, useFocus, useHotkeys, useSearchBox } from 'hooks'
+import {
+  useCallback,
+  useEffect,
+  useFocus,
+  useHotkeys,
+  useMemo,
+  useSearch,
+  useSearchBox,
+} from 'hooks'
 
 const SearchForm = styled(Form)`
   flex-grow: 1;
@@ -74,9 +82,12 @@ const SearchClose = styled(props => (
   }
 `
 
-const SearchBox = ({ expanded, setExpanded, open, setOpen, value, setValue, ...props }) => {
-  const { query, refine } = useSearchBox(props)
+const SearchBox = ({ router, ...props }) => {
+  const { query, setQuery, expanded, setExpanded, setOpen, isSearchPage } = useSearch()
+  const { query: refinedQuery, refine } = useSearchBox()
   const [inputRef, setInputFocus] = useFocus()
+
+  const closeTitle = useMemo(() => (query ? 'Clear search' : 'Hide search'), [query])
 
   const onOpen = useCallback(() => {
     setExpanded(true)
@@ -84,14 +95,14 @@ const SearchBox = ({ expanded, setExpanded, open, setOpen, value, setValue, ...p
     setInputFocus(true)
   }, [setExpanded, setOpen, setInputFocus])
   const onClose = useCallback(() => {
-    setValue('')
-    if (value) {
+    setQuery('')
+    if (query) {
       setInputFocus(true)
       return
     }
     setExpanded(false)
     setOpen(false)
-  }, [setExpanded, setOpen, setInputFocus, setValue, value])
+  }, [setQuery, query, setExpanded, setOpen, setInputFocus])
 
   const onFocus = useCallback(() => {
     setOpen(true)
@@ -99,9 +110,9 @@ const SearchBox = ({ expanded, setExpanded, open, setOpen, value, setValue, ...p
 
   const onChange = useCallback(
     e => {
-      setValue(e.target.value)
+      setQuery(e.target.value)
     },
-    [setValue]
+    [setQuery]
   )
   const onKeyDown = useCallback(
     e => {
@@ -121,20 +132,24 @@ const SearchBox = ({ expanded, setExpanded, open, setOpen, value, setValue, ...p
     e => {
       e.preventDefault()
       e.stopPropagation()
-      if (inputRef.current) setInputFocus(false)
+      if (query) {
+        setOpen(false)
+        router.push(`/search?q=${query}`)
+        setInputFocus(false)
+      }
     },
-    [inputRef, setInputFocus]
+    [query, router, setInputFocus, setOpen]
   )
-
-  useEffect(() => {
-    if (query !== value) refine(value)
-  }, [value, refine, query])
 
   useHotkeys('ctrl+k, cmd+k', onOpen)
   useHotkeys('esc', onClose)
 
+  useEffect(() => {
+    if (query !== refinedQuery) refine(query)
+  }, [refine, query, refinedQuery])
+
   return expanded ? (
-    <SearchForm {...props} onSubmit={onSubmit} open={open}>
+    <SearchForm {...props} onSubmit={onSubmit}>
       <SearchInput
         autoComplete="off"
         autoFocus
@@ -145,10 +160,10 @@ const SearchBox = ({ expanded, setExpanded, open, setOpen, value, setValue, ...p
         placeholder="Search..."
         ref={inputRef}
         spellCheck={false}
-        value={value}
+        value={query}
       />
-      <SearchButton title="Search" type="submit" />
-      <SearchClose onClick={onClose} title="Hide search" type="button" />
+      <SearchButton disabled={isSearchPage} title="Search!" type="submit" />
+      <SearchClose onClick={onClose} title={closeTitle} type="button" />
     </SearchForm>
   ) : (
     <SearchButton {...props} onClick={onOpen} title="Open search" />

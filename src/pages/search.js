@@ -1,11 +1,7 @@
-import { useEffect, useSearch } from 'hooks'
+import { useSearch } from 'hooks'
 
 const Search = () => {
-  const { refine, query, setOpen } = useSearch()
-
-  useEffect(() => {
-    setOpen(true)
-  }, [setOpen])
+  const { query } = useSearch()
 
   return <p>{query}</p>
 }

@@ -1,9 +1,15 @@
-import { useSearchBox } from 'hooks'
+import { useSearch } from 'hooks'
 
-const Search = () => {
-  const { query } = useSearchBox()
+const Home = () => {
+  const { query, expanded, open } = useSearch()
 
-  return <p>{query}</p>
+  return (
+    <>
+      <p>{`Query: ${query}`}</p>
+      <p>{`Expanded: ${expanded}`}</p>
+      <p>{`Open: ${open}`}</p>
+    </>
+  )
 }
 
-export default Search
+export default Home

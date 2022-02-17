@@ -36,5 +36,8 @@ export default createGlobalStyle`
       background: var(--primary);
       color: var(--bg);
     }
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 `

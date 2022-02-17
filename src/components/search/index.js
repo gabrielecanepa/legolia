@@ -2,7 +2,7 @@ import Dropdown from './dropdown'
 import SearchBox from './searchbox'
 import styled from 'styled-components'
 import { Configure } from 'react-instantsearch-hooks'
-import { useCallback, useClickOut, useRef, useState } from 'hooks'
+import { useCallback, useClickOut, useMemo, useRef, useSearch } from 'hooks'
 
 const SearchContainer = styled.div`
   position: relative;
@@ -11,31 +11,25 @@ const SearchContainer = styled.div`
   justify-content: flex-end;
 `
 
-const Search = ({ open: initial }) => {
-  const [expanded, setExpanded] = useState(!!initial)
-  const [open, setOpen] = useState(!!initial)
-  const [value, setValue] = useState('')
+const Search = props => {
   const searchRef = useRef(null)
+  const { query, setExpanded, open, setOpen, isSearchPage } = useSearch()
+
+  const isOpen = useMemo(() => !isSearchPage && open, [isSearchPage, open])
 
   const onClickOut = useCallback(() => {
     setOpen(false)
-  }, [])
+    if (!query) setExpanded(false)
+  }, [query, setExpanded, setOpen])
 
   useClickOut(searchRef, onClickOut)
 
   return (
     <>
       <Configure hitsPerPage={8} />
-      <SearchContainer ref={searchRef}>
-        <SearchBox
-          expanded={expanded}
-          open={open}
-          setExpanded={setExpanded}
-          setOpen={setOpen}
-          setValue={setValue}
-          value={value}
-        />
-        {open && <Dropdown searchRef={searchRef} setOpen={setOpen} setValue={setValue} />}
+      <SearchContainer ref={searchRef} {...props}>
+        <SearchBox open={isOpen} />
+        {isOpen && <Dropdown />}
       </SearchContainer>
     </>
   )

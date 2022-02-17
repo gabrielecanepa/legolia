@@ -3,7 +3,7 @@ import algolia from 'config/algolia'
 import styled from 'styled-components'
 import { Configure, Index } from 'react-instantsearch-hooks'
 import { Image, Link } from 'components'
-import { useCallback, useHits } from 'hooks'
+import { useCallback, useHits, useSearch } from 'hooks'
 
 const Wrapper = styled.div`
   position: absolute;
@@ -18,15 +18,15 @@ const Wrapper = styled.div`
   border-radius: 0 0 1.25rem 1.25rem;
 `
 
-const QSHits = styled(({ setOpen, setValue, ...props }) => {
+const QSHits = styled(({ setQuery, setOpen, ...props }) => {
   const { hits } = useHits()
 
   const onHitClick = useCallback(
     hit => () => {
-      setValue(hit.query)
+      setQuery(hit.query)
       setOpen(false)
     },
-    [setOpen, setValue]
+    [setOpen, setQuery]
   )
 
   return (
@@ -53,7 +53,7 @@ const QSHits = styled(({ setOpen, setValue, ...props }) => {
   }
 `
 
-const ProductsHits = styled(({ ...props }) => {
+const ProductsHits = styled(props => {
   const { hits } = useHits()
 
   return (
@@ -86,14 +86,18 @@ const ProductsHits = styled(({ ...props }) => {
   }
 `
 
-const Dropdown = ({ setOpen, setValue, ...props }) => (
-  <Wrapper {...props}>
-    <Index indexName={algolia.indexNameQS}>
-      <Configure hitsPerPage={10} />
-      <QSHits setOpen={setOpen} setValue={setValue} />
-    </Index>
-    <ProductsHits />
-  </Wrapper>
-)
+const Dropdown = props => {
+  const { setQuery, setOpen } = useSearch()
+
+  return (
+    <Wrapper {...props}>
+      <Index indexName={algolia.indexNameQS}>
+        <Configure hitsPerPage={10} />
+        <QSHits setOpen={setOpen} setQuery={setQuery} />
+      </Index>
+      <ProductsHits />
+    </Wrapper>
+  )
+}
 
 export default Dropdown

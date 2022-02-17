@@ -1,7 +1,7 @@
 import useClickOut from './use-click-out'
 import useFocus from './use-focus'
 import useSearch from './use-search'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHits, useSearchBox } from 'react-instantsearch-hooks'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -12,6 +12,7 @@ export {
   useFocus,
   useHits,
   useHotkeys,
+  useMemo,
   useRef,
   useSearch,
   useSearchBox,

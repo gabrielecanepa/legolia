@@ -1,18 +1,35 @@
-import { useEffect, useState } from 'react'
-import { useSearchBox } from 'react-instantsearch-hooks'
+import { createGlobalState } from 'react-hooks-global-state'
+import { useMemo } from 'react'
+import { useRouter } from 'next/router'
+
+const initialState = {
+  query: '',
+  expanded: false,
+  open: false,
+}
+
+const { useGlobalState } = createGlobalState(initialState)
 
 /**
- * Hook to retrieve and edit the search state.
+ * Hook to retrieve and update the search state.
  */
-const useSearch = (initialQuery = '', isOpen = false) => {
-  const [open, setOpen] = useState(isOpen)
-  const { refine, query } = useSearchBox()
+const useSearch = () => {
+  const router = useRouter()
+  const [query, setQuery] = useGlobalState('query')
+  const [expanded, setExpanded] = useGlobalState('expanded')
+  const [open, setOpen] = useGlobalState('open')
 
-  useEffect(() => {
-    refine(initialQuery)
-  }, [initialQuery, refine])
+  const isSearchPage = useMemo(() => router.pathname === '/search', [router.pathname])
 
-  return { open, query, refine, setOpen }
+  return {
+    expanded,
+    open,
+    query,
+    setExpanded,
+    setOpen,
+    setQuery,
+    isSearchPage,
+  }
 }
 
 export default useSearch
